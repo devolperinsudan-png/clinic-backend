@@ -1,4 +1,4 @@
-// server.js (نسخة مصححة وجاهزة تماماً لمنصة Render)
+// server.js (النسخة الآمنة والمعدلة بالكامل لمنصة Render)
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
@@ -9,15 +9,15 @@ app.use(express.json());
 
 const JWT_SECRET = "Clinic_Cyber_Security_Token_2026_Secure";
 
-// تأكد من استبدال كلمة "اكتب_كلمة_المرور_هنا" بكلمة سر مستخدم قاعدة البيانات الحقيقية
+// تأكد من استبدال كلمة "De3949sud" بكلمة مرور مستخدم قاعدة البيانات الحقيقية إذا كانت مختلفة
 const MONGO_URI = "mongodb+srv://Dadbes_in_sudan:De3949sud@@cluster0.8h3dblw.mongodb.net/digital_clinic?retryWrites=true&w=majority&appName=Cluster0";
 
-// الاتصال الآمن بقاعدة البيانات السحابية
+// الاتصال بقاعدة البيانات السحابية
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Connected successfully to MongoDB Atlas'))
   .catch(err => console.error('❌ Database connection error:', err));
 
-// --- إعداد العدادات التلقائية الفريدة في قاعدة البيانات ---
+// --- إعداد العدادات التلقائية الفريدة ---
 const counterSchema = new mongoose.Schema({
     _id: String,
     seq: Number
@@ -37,7 +37,7 @@ async function getNextSequenceValue(sequenceName, startValue) {
    return sequenceDocument.seq;
 }
 
-// --- بناء المخططات والجداول الحقيقية للمستخدمين ---
+// --- بناء المخططات والجداول للمستخدمين ---
 const userSchema = new mongoose.Schema({
     id: { type: Number, unique: true, required: true },
     name: { type: String, required: true },
@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// --- بوابات استقبال الطلبات الآمنة عبر الإنترنت ---
+// --- بوابات استقبال الطلبات الآمنة ---
 
 // 1. تسجيل مريض جديد
 app.post('/v1/auth/register/patient', async (req, res) => {
@@ -97,7 +97,7 @@ app.post('/v1/auth/register/doctor', async (req, res) => {
     }
 });
 
-// 3. تسجيل الدخول والمطابقة الحقيقية لتشفيير كلمات المرور
+// 3. تسجيل الدخول والمطابقة الحقيقية للبيانات
 app.post('/v1/auth/login', async (req, res) => {
     try {
         const { id, password } = req.body;
@@ -124,29 +124,26 @@ app.get('/v1/doctors', async (req, res) => {
     }
 });
 
-// --- وظيفة الخلفية التلقائية لتحديث حالة الطبيب كل دقيقة ---
+// --- وظيفة الخلفية التلقائية لتحديث حالة الطبيب تلقائياً كل دقيقة بنقاء برمجي عالي ---
 setInterval(async () => {
     try {
         const currentHour = new Date().getHours();
         
-        // تحديث الأطباء النشطين حالياً بناءً على جدول ساعات عملهم
-        await User.updateMany(
-            { isDoctor: true, startHour: { lte: currentHour , endHour: gt: currentHour } },
-            { \$set: { isActiveServerSide: true } }
-        );
-        
-        // تحديث الأطباء غير النشطين حالياً خارج ساعات العمل
-        await User.updateMany(
-            { isDoctor: true, \$or: [{ startHour: { gt: currentHour , endHour: lte: currentHour } }] },
-            { \$set: { isActiveServerSide: false } }
-        );
-        
-        console.log(`[Cron Job] Updated doctors status for hour: ${currentHour}:00`);
+        // جلب جميع الأطباء وتحديث حالتهم بناءً على وقت النظام الحالي
+        const allDoctors = await User.find({ isDoctor: true });
+        for (let doc of allDoctors) {
+            const shouldBeActive = (currentHour >= doc.startHour && currentHour < doc.endHour);
+            if (doc.isActiveServerSide !== shouldBeActive) {
+                doc.isActiveServerSide = shouldBeActive;
+                await doc.save();
+            }
+        }
+        console.log(`[Cron Job] Doctors active statuses synchronized for hour: ${currentHour}:00`);
     } catch (err) {
-        console.error("Cron Job Error:", err);
+        console.error("Cron Job Execution Error:", err);
     }
 }, 60000);
 
-// جعل المنفذ ديناميكياً ليتوافق مع البيئة السحابية لـ Render بشكل صارم
+// تهيئة المنفذ المتوافق مع خوادم ريندر العالمية
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
