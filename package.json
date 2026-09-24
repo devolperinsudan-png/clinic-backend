@@ -1,7 +1,7 @@
 {
-  "name": "digital-clinic-database-backend",
+  "name": "digital-clinic-backend",
   "version": "1.0.0",
-  "description": "Production Ready Express Server with Real MongoDB Integration",
+  "description": "Secure HTTPS Backend for Digital Clinic App",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
