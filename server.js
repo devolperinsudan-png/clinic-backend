@@ -5,6 +5,13 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const app = express();
+const express = require('express');
+const cors = require('cors'); // 💡 أضف هذا السطر
+
+const app = express();
+app.use(cors()); // 💡 أضف هذا السطر لت السماح لـ FlutLab بالاتصال بالسيرفر
+app.use(express.json());
+
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || "Clinic_Cyber_Security_Token_2026_Secure";
