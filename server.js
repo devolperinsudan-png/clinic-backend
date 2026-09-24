@@ -1,27 +1,23 @@
-// server.js (النسخة السحابية النقية المصححة بالكامل لمنصة Render ودعم الـ CORS)
+// server.js (النسخة النهائية المستقرة لبيئات الويب والاتصال السحابي الآمن)
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const cors = require('cors'); 
+const cors = require('cors');
 
 const app = express();
 
-// تفعيل حزمة الـ CORS لتجاوز قيود حماية المتصفح والسماح لموقع FlutLab بالاتصال بالسيرفر
+// تفعيل CORS لفك حظر متصفحات الويب ومتصفح FlutLab نهائياً
 app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || "Clinic_Cyber_Security_Token_2026_Secure";
-
-// استدعاء رابط الاتصال بأمان من متغيرات البيئة في Render
 const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Dadbes_in_sudan:De3949sud@cluster0.8h3dblw.mongodb.net/digital_clinic?retryWrites=true&w=majority&appName=Cluster0";
 
-// الاتصال الآمن بقاعدة البيانات السحابية
 mongoose.connect(MONGO_URI)
   .then(() => console.log('✅ Connected successfully to MongoDB Atlas'))
   .catch(err => console.error('❌ Database connection error:', err));
 
-// --- إعداد العدادات التلقائية الفريدة في قاعدة البيانات ---
 const counterSchema = new mongoose.Schema({
     _id: String,
     seq: Number
@@ -29,9 +25,10 @@ const counterSchema = new mongoose.Schema({
 const Counter = mongoose.model('Counter', counterSchema);
 
 async function getNextSequenceValue(sequenceName, startValue) {
+   // ✅ تم تعديل كتابة الـ inc وحذف الرموز المسببة للمشاكل المعمارية عند الإقلاع
    let sequenceDocument = await Counter.findOneAndUpdate(
       { _id: sequenceName },
-      { $inc: { seq: 1 } }, // ✅ تم إزالة رمز \ الزائد وإصلاح السطر تماماً هنا ليعمل السيرفر
+      { $inc: { seq: 1 } }, 
       { new: true, upsert: true }
    );
    if (sequenceDocument.seq < startValue) {
@@ -41,7 +38,6 @@ async function getNextSequenceValue(sequenceName, startValue) {
    return sequenceDocument.seq;
 }
 
-// --- بناء المخططات والجداول للمستخدمين ---
 const userSchema = new mongoose.Schema({
     id: { type: Number, unique: true, required: true },
     name: { type: String, required: true },
@@ -59,9 +55,6 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// --- بوابات استقبال الطلبات الآمنة عبر الإنترنت ---
-
-// 1. تسجيل مريض جديد
 app.post('/v1/auth/register/patient', async (req, res) => {
     try {
         const { name, phone, email, password, gender } = req.body;
@@ -79,7 +72,6 @@ app.post('/v1/auth/register/patient', async (req, res) => {
     }
 });
 
-// 2. تسجيل طبيب جديد
 app.post('/v1/auth/register/doctor', async (req, res) => {
     try {
         const { name, phone, email, password, gender, specialty, details, startHour, endHour } = req.body;
@@ -101,7 +93,6 @@ app.post('/v1/auth/register/doctor', async (req, res) => {
     }
 });
 
-// 3. تسجيل الدخول ومطابقة التشفير الحقيقية لقاعدة البيانات
 app.post('/v1/auth/login', async (req, res) => {
     try {
         const { id, password } = req.body;
@@ -118,7 +109,6 @@ app.post('/v1/auth/login', async (req, res) => {
     }
 });
 
-// 4. جلب قائمة الأطباء المتزامنة
 app.get('/v1/doctors', async (req, res) => {
     try {
         const doctorsList = await User.find({ isDoctor: true });
@@ -128,32 +118,11 @@ app.get('/v1/doctors', async (req, res) => {
     }
 });
 
-// مسار رئيسي لفحص سلامة استيقاظ وتشغيل السيرفر من المتصفح مباشرة
 app.get('/', (req, res) => {
     res.send('🚀 Digital Clinic Backend API is live and working smoothly!');
 });
 
-// --- وظيفة الخلفية التلقائية المتوافقة سحابياً لتحديث حالة الطبيب كل دقيقة ---
-setInterval(async () => {
-    try {
-        const currentHour = new Date().getHours();
-        const allDoctors = await User.find({ isDoctor: true });
-        for (let doc of allDoctors) {
-            const shouldBeActive = (currentHour >= doc.startHour && currentHour < doc.endHour);
-            if (doc.isActiveServerSide !== shouldBeActive) {
-                doc.isActiveServerSide = shouldBeActive;
-                await doc.save();
-            }
-        }
-        console.log(`[Cron Job] Doctors status synchronized for hour: ${currentHour}:00`);
-    } catch (err) {
-        console.error("Cron Job Execution Error:", err);
-    }
-}, 60000);
-
-// ضبط منفذ السيرفر ليتوافق ديناميكياً وعالمياً مع متطلبات Render السحابية
 const PORT = process.env.PORT || 10000;
-
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running securely on port ${PORT}`);
 });
