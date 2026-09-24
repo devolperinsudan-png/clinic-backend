@@ -1,17 +1,14 @@
-// server.js (النسخة السحابية النقية المصححة بالكامل لمنصة Render)
+// server.js (النسخة السحابية النقية المصححة بالكامل لمنصة Render ودعم الـ CORS)
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const cors = require('cors'); // ✅ استدعاء حزمة السماح بالاتصال الخارجي
 
 const app = express();
-const express = require('express');
-const cors = require('cors'); // 💡 أضف هذا السطر
 
-const app = express();
-app.use(cors()); // 💡 أضف هذا السطر لت السماح لـ FlutLab بالاتصال بالسيرفر
-app.use(express.json());
-
+// ✅ تفعيل حزمة الـ CORS لتجاوز قيود حماية المتصفح والسماح لموقع FlutLab بالاتصال بالسيرفر
+app.use(cors());
 app.use(express.json());
 
 const JWT_SECRET = process.env.JWT_SECRET || "Clinic_Cyber_Security_Token_2026_Secure";
@@ -34,7 +31,7 @@ const Counter = mongoose.model('Counter', counterSchema);
 async function getNextSequenceValue(sequenceName, startValue) {
    let sequenceDocument = await Counter.findOneAndUpdate(
       { _id: sequenceName },
-      { $inc: { seq: 1 } }, // ✅ تم تصحيح العلامة الزائدة هنا لتعمل الدالة بسلاسة
+      { \$inc: { seq: 1 } }, // تصحيح العلامات البرمجية للعداد التلقائي لقاعدة البيانات
       { new: true, upsert: true }
    );
    if (sequenceDocument.seq < startValue) {
@@ -131,7 +128,7 @@ app.get('/v1/doctors', async (req, res) => {
     }
 });
 
-// إضافة مسار رئيسي (Root Route) للتأكد من استجابة السيرفر لمنصة Render
+// مسار رئيسي لفحص سلامة استيقاظ وتشغيل السيرفر من المتصفح مباشرة
 app.get('/', (req, res) => {
     res.send('🚀 Digital Clinic Backend API is live and working smoothly!');
 });
@@ -155,7 +152,7 @@ setInterval(async () => {
 }, 60000);
 
 // ضبط منفذ السيرفر ليتوافق ديناميكياً وعالمياً مع متطلبات Render السحابية
-const PORT = process.env.PORT || 30000;
+const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`✅ Server is running securely on port ${PORT}`);
