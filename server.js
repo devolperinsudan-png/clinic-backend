@@ -10,7 +10,7 @@ app.use(express.json());
 const JWT_SECRET = "Clinic_Cyber_Security_Token_2026_Secure";
 
 // تأكد من استبدال كلمة "De3949sud" بكلمة مرور مستخدم قاعدة البيانات الحقيقية إذا كانت مختلفة
-const MONGO_URI = "mongodb+srv://Dadbes_in_sudan:De3949$sud@cluster0.8h3dblw.mongodb.net/?appName=Cluster0";
+const MONGO_URI = "mongodb+srv://Dadbes_in_sudan:De3949sud@cluster0.8h3dblw.mongodb.net/?appName=Cluster0";
 
 // الاتصال بقاعدة البيانات السحابية
 mongoose.connect(MONGO_URI)
