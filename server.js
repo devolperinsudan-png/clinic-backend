@@ -144,7 +144,7 @@ setInterval(async () => {
 
 // ضبط منفذ السيرفر ليتوافق ديناميكياً مع متطلبات Render السحابية
 // 1. تأكد من تعريف الـ PORT بهذا الشكل ليتوافق مع Render ومع جهازك محلياً
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 // 2. تأكد أن دالة تشغيل السيرفر تستخدم متغير PORT
 app.listen(PORT, '0.0.0.0', () => {
