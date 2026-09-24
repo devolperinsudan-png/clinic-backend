@@ -27,7 +27,7 @@ const Counter = mongoose.model('Counter', counterSchema);
 async function getNextSequenceValue(sequenceName, startValue) {
    let sequenceDocument = await Counter.findOneAndUpdate(
       { _id: sequenceName },
-      { \$inc: { seq: 1 } }, // ✅ تم تصحيح العلامة الزائدة هنا لتعمل الدالة بسلاسة
+      { $inc: { seq: 1 } }, // ✅ تم تصحيح العلامة الزائدة هنا لتعمل الدالة بسلاسة
       { new: true, upsert: true }
    );
    if (sequenceDocument.seq < startValue) {
