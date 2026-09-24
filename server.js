@@ -3,11 +3,11 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const cors = require('cors'); // ✅ استدعاء حزمة السماح بالاتصال الخارجي
+const cors = require('cors'); 
 
 const app = express();
 
-// ✅ تفعيل حزمة الـ CORS لتجاوز قيود حماية المتصفح والسماح لموقع FlutLab بالاتصال بالسيرفر
+// تفعيل حزمة الـ CORS لتجاوز قيود حماية المتصفح والسماح لموقع FlutLab بالاتصال بالسيرفر
 app.use(cors());
 app.use(express.json());
 
@@ -31,7 +31,7 @@ const Counter = mongoose.model('Counter', counterSchema);
 async function getNextSequenceValue(sequenceName, startValue) {
    let sequenceDocument = await Counter.findOneAndUpdate(
       { _id: sequenceName },
-      { \$inc: { seq: 1 } }, // تصحيح العلامات البرمجية للعداد التلقائي لقاعدة البيانات
+      { $inc: { seq: 1 } }, // ✅ تم إزالة رمز \ الزائد وإصلاح السطر تماماً هنا ليعمل السيرفر
       { new: true, upsert: true }
    );
    if (sequenceDocument.seq < startValue) {
