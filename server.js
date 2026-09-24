@@ -143,5 +143,10 @@ setInterval(async () => {
 }, 60000);
 
 // ضبط منفذ السيرفر ليتوافق ديناميكياً مع متطلبات Render السحابية
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+// 1. تأكد من تعريف الـ PORT بهذا الشكل ليتوافق مع Render ومع جهازك محلياً
+const PORT = process.env.PORT || 5000;
+
+// 2. تأكد أن دالة تشغيل السيرفر تستخدم متغير PORT
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
+});
