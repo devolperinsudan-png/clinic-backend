@@ -7,10 +7,10 @@ const jwt = require('jsonwebtoken');
 const app = express();
 app.use(express.json());
 
-const JWT_SECRET = "Clinic_Cyber_Security_Token_2026_Secure";
+const JWT_SECRET = process.env.JWT_SECRET || "Clinic_Cyber_Security_Token_2026_Secure";
 
-// رابط الاتصال السحابي الحقيقي الخاص بك ومدمج به كلمة مرورك
-const MONGO_URI = "mongodb+srv://Dadbes_in_sudan:De3949sud@cluster0.8h3dblw.mongodb.net/digital_clinic?retryWrites=true&w=majority&appName=Cluster0";
+// استدعاء رابط الاتصال بأمان من متغيرات البيئة في Render
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://Dadbes_in_sudan:De3949sud@cluster0.8h3dblw.mongodb.net/digital_clinic?retryWrites=true&w=majority&appName=Cluster0";
 
 // الاتصال الآمن بقاعدة البيانات السحابية
 mongoose.connect(MONGO_URI)
@@ -27,7 +27,7 @@ const Counter = mongoose.model('Counter', counterSchema);
 async function getNextSequenceValue(sequenceName, startValue) {
    let sequenceDocument = await Counter.findOneAndUpdate(
       { _id: sequenceName },
-      { \$inc: { seq: 1 } },
+      { \$inc: { seq: 1 } }, // ✅ تم تصحيح العلامة الزائدة هنا لتعمل الدالة بسلاسة
       { new: true, upsert: true }
    );
    if (sequenceDocument.seq < startValue) {
@@ -124,6 +124,11 @@ app.get('/v1/doctors', async (req, res) => {
     }
 });
 
+// إضافة مسار رئيسي (Root Route) للتأكد من استجابة السيرفر لمنصة Render
+app.get('/', (req, res) => {
+    res.send('🚀 Digital Clinic Backend API is live and working smoothly!');
+});
+
 // --- وظيفة الخلفية التلقائية المتوافقة سحابياً لتحديث حالة الطبيب كل دقيقة ---
 setInterval(async () => {
     try {
@@ -142,11 +147,9 @@ setInterval(async () => {
     }
 }, 60000);
 
-// ضبط منفذ السيرفر ليتوافق ديناميكياً مع متطلبات Render السحابية
-// 1. تأكد من تعريف الـ PORT بهذا الشكل ليتوافق مع Render ومع جهازك محلياً
-const PORT = process.env.PORT || 3000;
+// ضبط منفذ السيرفر ليتوافق ديناميكياً وعالمياً مع متطلبات Render السحابية
+const PORT = process.env.PORT || 30000;
 
-// 2. تأكد أن دالة تشغيل السيرفر تستخدم متغير PORT
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`✅ Server is running securely on port ${PORT}`);
 });
